@@ -19,7 +19,9 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
 
-bot.on(":text", async ctx => {
+const safe = bot.errorBoundary(console.error)
+
+safe.on(":text", async ctx => {
     const {results = []} = await openai.moderations.create({input: ctx.msg.text})
     if (results.some(({flagged} = {}) => flagged)) return ctx.react("🙈")
 });
