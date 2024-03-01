@@ -1,4 +1,5 @@
 import {Bot} from "grammy";
+import OpenAI from "openai";
 
 export const {
 
@@ -13,5 +14,12 @@ export const {
 // Default grammY bot instance
 export const bot = new Bot(token);
 
-// Sample handler for a simple echo bot
-bot.on("message:text", ctx => ctx.reply(ctx.msg.text));
+// Create an OpenAI API client (that's edge friendly!)
+const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+});
+
+bot.on(":text", async ctx => {
+    const {results = []} = await openai.moderations.create({input: ctx.msg.text})
+    if (results.some(({flagged} = {}) => flagged)) return ctx.react("🙈")
+});
