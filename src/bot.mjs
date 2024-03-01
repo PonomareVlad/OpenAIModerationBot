@@ -23,5 +23,5 @@ const safe = bot.errorBoundary(console.error)
 
 safe.on(":text", async ctx => {
     const {results = []} = await openai.moderations.create({input: ctx.msg.text})
-    if (results.some(({flagged} = {}) => flagged)) return ctx.react("🙈")
+    if (results.some(({flagged} = {}) => flagged)) return ctx.deleteMessage()
 });
